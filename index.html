@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Misiones Repetibles</title>
+    <style>
+      :root {
+        --bg: #0a0c10;
+        --surface: #111318;
+        --surface2: #181c24;
+        --border: #232836;
+        --accent: #f4b400;
+        --accent2: #e05a2b;
+        --green: #2ecc71;
+        --teal: #1abc9c;
+        --red: #e74c3c;
+        --blue: #3498db;
+        --text: #e8eaf0;
+        --muted: #6b7280;
+        --pill-day: #1d3d2e;
+        --pill-day-text: #2ecc71;
+        --pill-week: #1e2d4a;
+        --pill-week-text: #60aef0;
+        --gold: #f4b400;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        font-size: 16px;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      header {
+        background: linear-gradient(135deg, #0d0f14 0%, #141820 60%, #0f1218 100%);
+        border-bottom: 2px solid var(--accent);
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        height: 64px;
+      }
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .logo-dofus {
+        width: 36px;
+        height: 36px;
+        background: var(--accent);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Exo 2", sans-serif;
+        font-size: 18px;
+        font-weight: 800;
+        color: #0a0c10;
+        flex-shrink: 0;
+      }
+      .header-title {
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 700;
+        font-size: 22px;
+        line-height: 1.1;
+      }
+      .header-title span {
+        color: var(--accent);
+      }
+      .header-sub a {
+        color: #ff2d2d;
+        text-decoration: none;
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 600;
+        font-size: 12px;
+      }
+      .yt-link {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 6px 14px;
+        text-decoration: none;
+        color: var(--text);
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 600;
+        font-size: 13px;
+      }
+      .main-wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px 20px 80px;
+      }
+      .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+      .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        text-align: center;
+        position: relative;
+      }
+      .stat-label {
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .stat-val {
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 700;
+        font-size: 26px;
+      }
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .filter-btn {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--muted);
+        padding: 7px 16px;
+        cursor: pointer;
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 600;
+      }
+      .filter-btn.active {
+        background: var(--accent);
+        color: #0a0c10;
+        border-color: var(--accent);
+      }
+      .reset-btn {
+        margin-left: auto;
+        background: rgba(231, 76, 60, 0.08);
+        border: 1px solid rgba(231, 76, 60, 0.25);
+        border-radius: 6px;
+        color: #e74c3c;
+        padding: 7px 16px;
+        cursor: pointer;
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 600;
+      }
+      .zone-section {
+        margin-bottom: 20px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        overflow: hidden;
+      }
+      .zone-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        background: var(--surface2);
+        cursor: pointer;
+      }
+      .zone-name {
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 700;
+        color: var(--accent);
+        flex: 1;
+        text-transform: uppercase;
+      }
+      .quest-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .quest-table th {
+        padding: 8px 14px;
+        text-align: left;
+        font-size: 12px;
+        color: var(--muted);
+        border-bottom: 1px solid var(--border);
+        text-transform: uppercase;
+      }
+      .quest-row.done {
+        opacity: 0.45;
+        background: rgba(0, 0, 0, 0.15);
+      }
+      .quest-row.done .quest-name span {
+        text-decoration: line-through;
+      }
+      .pill {
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .pill.day {
+        background: var(--pill-day);
+        color: var(--pill-day-text);
+      }
+      .pill.week {
+        background: var(--pill-week);
+        color: var(--pill-week-text);
+      }
+      .footer-note {
+        margin-top: 32px;
+        padding: 14px 18px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-left">
+        <div class="logo-dofus">T</div>
+        <div>
+          <div class="header-title">Misiones <span>Repetibles</span></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-wrap">
+      <div class="stats-bar">
+        <div class="stat-card gold">
+          <div class="stat-label">Ganancia Diaria</div>
+          <div class="stat-val" id="stat-daily">0</div>
+          <div class="stat-unit">kamas</div>
+        </div>
+        <div class="stat-card teal">
+          <div class="stat-label">Ganancia Semanal</div>
+          <div class="stat-val" id="stat-weekly">0</div>
+          <div class="stat-unit">kamas</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Misiones completadas</div>
+          <div class="stat-val" id="stat-checked">0</div>
+          <div class="stat-unit">/ <span id="stat-total">0</span> misiones</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-label">Kamas restantes</div>
+          <div class="stat-val" id="stat-remain">0</div>
+          <div class="stat-unit">por recolectar</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="filter-btn active" id="btn-all" onclick="setFilter('all')">Todas</button>
+        <button class="filter-btn" id="btn-daily" onclick="setFilter('daily')">Diarias</button>
+        <button class="filter-btn" id="btn-weekly" onclick="setFilter('weekly')">Semanales</button>
+        <button class="reset-btn" onclick="resetAll()">↺ Desmarcar todo</button>
+      </div>
+
+      <div id="zones-container"></div>
+
+      <div class="footer-note">
+        <strong>⚠ Reglas especiales:</strong>
+        Las 3 misiones de <strong>Bonta/Neutral/Brakmar</strong> (¡Carguen!, ¡Arre, Titina!, ¡Arre!) varían según tu
+        alineación; solo una es realizable por día.<br />
+        Las 6 misiones de <strong>Oficios</strong>: Solo una por día según tu oficio de recolección.<br />
+        <strong>🗓</strong> Excluye eventos estacionales (Pascua, Nawidad, Vulkania, Frigost).
+      </div>
+    </div>
+
+    <script>
+      const ZONES = [
+        {
+          id: "astrub",
+          name: "Astrub",
+          icon: "🏙",
+          quests: [
+            {
+              id: "q1",
+              name: "¡Bien velludo Kerubim!",
+              url: "https://dofusdb.fr/es/database/quest/1200",
+              kamas: 0,
+              annexe: "10 Pelos de Kerubim",
+              period: "daily",
+            },
+            {
+              id: "q2",
+              name: "¡Tiene que brillar!",
+              url: "https://dofusdb.fr/es/database/quest/1429",
+              kamas: 43980,
+              annexe: null,
+              period: "weekly",
+            },
+            {
+              id: "q3",
+              name: "Misión del Almanax",
+              url: "https://dofusdb.fr/es/database/quest/1020",
+              kamas: 0,
+              annexe: "Kamas variables",
+              period: "daily",
+              variable: true,
+            },
+            {
+              id: "q4",
+              name: "Flores espinosas",
+              url: "https://dofusdb.fr/es/database/quest/551",
+              kamas: 2380,
+              annexe: "1 Pergamino de Alquimista",
+              period: "daily",
+            },
+          ],
+        },
+        {
+          id: "amakna",
+          name: "Amakna",
+          icon: "🌿",
+          quests: [
+            {
+              id: "q5",
+              name: "Carne de dragopavo para la mesa de Allister",
+              url: "https://dofusdb.fr/es/database/quest/703",
+              kamas: 4105,
+              annexe: "15 perga cazador",
+              period: "daily",
+            },
+            {
+              id: "q6",
+              name: "La fantástica escuela de miau",
+              url: "https://dofusdb.fr/es/database/quest/1428",
+              kamas: 43980,
+              annexe: "10 Tejidos Misteriosos",
+              period: "weekly",
+            },
+          ],
+        },
+        {
+          id: "bonta",
+          name: "Bonta / Neutral / Brakmar",
+          icon: "⚔",
+          variant: true,
+          variantNote: "Solo 1 misión diaria según tu alineación.",
+          quests: [
+            {
+              id: "q7",
+              name: "¡Carguen!",
+              url: "https://dofusdb.fr/es/database/quest/515",
+              kamas: 4780,
+              annexe: "5 Perga de Criador",
+              period: "daily",
+            },
+            {
+              id: "q8",
+              name: "¡Arre, Titina!",
+              url: "https://dofusdb.fr/es/database/quest/514",
+              kamas: 4780,
+              annexe: "5 Perga de Criador",
+              period: "daily",
+            },
+            {
+              id: "q9",
+              name: "¡Arre!",
+              url: "https://dofusdb.fr/es/database/quest/516",
+              kamas: 4780,
+              annexe: "5 Perga de Criador",
+              period: "daily",
+            },
+          ],
+        },
+        {
+          id: "sufokia",
+          name: "Sufokia",
+          icon: "🌊",
+          quests: [
+            {
+              id: "q10",
+              name: "Collar de perlas en vinagreta",
+              url: "https://dofusdb.fr/es/database/quest/511",
+              kamas: 2220,
+              annexe: null,
+              period: "daily",
+            },
+            {
+              id: "q11",
+              name: "Patas con huevos frescos",
+              url: "https://dofusdb.fr/es/database/quest/512",
+              kamas: 4760,
+              annexe: null,
+              period: "daily",
+            },
+            {
+              id: "q12",
+              name: "Es un tipo duro",
+              url: "https://dofusdb.fr/es/database/quest/513",
+              kamas: 5810,
+              annexe: null,
+              period: "daily",
+            },
+            {
+              id: "q13",
+              name: "Cómo ponerse al corriente",
+              url: "https://dofusdb.fr/es/database/quest/506",
+              kamas: 8210,
+              annexe: null,
+              period: "daily",
+            },
+          ],
+        },
+        {
+          id: "metiers",
+          name: "Oficios (Sufokia)",
+          icon: "🔨",
+          variant: true,
+          variantNote: "Solo 1 misión diaria según tu oficio de recolección.",
+          quests: [
+            {
+              id: "q14",
+              name: "Recolectar es su oficio",
+              url: "https://dofusdb.fr/es/database/quest/507",
+              kamas: 552,
+              annexe: "1 Pergamino Alquimista",
+              period: "daily",
+            },
+            {
+              id: "q15",
+              name: "Cortar es su oficio",
+              url: "https://dofusdb.fr/es/database/quest/510",
+              kamas: 552,
+              annexe: "1 Pergamino Leñador",
+              period: "daily",
+            },
+            {
+              id: "q16",
+              name: "Cazar es su oficio",
+              url: "https://dofusdb.fr/es/database/quest/505",
+              kamas: 552,
+              annexe: "1 Pergamino Cazador",
+              period: "daily",
+            },
+            {
+              id: "q17",
+              name: "Excavar es su oficio",
+              url: "https://dofusdb.fr/es/database/quest/509",
+              kamas: 552,
+              annexe: "1 Pergamino Minero",
+              period: "daily",
+            },
+            {
+              id: "q18",
+              name: "Segar es su oficio",
+              url: "https://dofusdb.fr/es/database/quest/508",
+              kamas: 552,
+              annexe: "1 Pergamino Campesino",
+              period: "daily",
+            },
+            {
+              id: "q19",
+              name: "Pescar es su oficio",
+              url: "https://dofusdb.fr/es/database/quest/504",
+              kamas: 552,
+              annexe: "1 Pergamino Pescador",
+              period: "daily",
+            },
+          ],
+        },
+        {
+          id: "wabbit",
+          name: "Isla de los Wabbits",
+          icon: "🐰",
+          quests: [
+            {
+              id: "q20",
+              name: "La caza de Lily",
+              url: "https://dofusdb.fr/es/database/quest/1141",
+              kamas: 3480,
+              annexe: "1x Zanahowia",
+              period: "daily",
+            },
+            {
+              id: "q21",
+              name: "Un poco de Wabbit",
+              url: "https://dofusdb.fr/es/database/quest/1138",
+              kamas: 4780,
+              annexe: "1x Zanahowia",
+              period: "daily",
+            },
+            {
+              id: "q22",
+              name: "Eso te hace amable",
+              url: "https://dofusdb.fr/es/database/quest/1139",
+              kamas: 4780,
+              annexe: "1x Zanahowia",
+              period: "daily",
+            },
+            {
+              id: "q23",
+              name: "Los príncipes caídos",
+              url: "https://dofusdb.fr/es/database/quest/1140",
+              kamas: 4780,
+              annexe: "1x Zanahowia",
+              period: "daily",
+            },
+          ],
+        },
+        {
+          id: "koalak",
+          name: "Montaña de los Koalaks",
+          icon: "🐨",
+          quests: [
+            {
+              id: "q24",
+              name: "Carrera polar",
+              url: "https://dofusdb.fr/es/database/quest/1359",
+              kamas: 11010,
+              annexe: "Consumibles",
+              period: "daily",
+            },
+            {
+              id: "q25",
+              name: "Delicatesen",
+              url: "https://dofusdb.fr/es/database/quest/1360",
+              kamas: 11010,
+              annexe: "Consumibles",
+              period: "daily",
+            },
+            {
+              id: "q26",
+              name: "Cargar la mula",
+              url: "https://dofusdb.fr/es/database/quest/1361",
+              kamas: 17810,
+              annexe: "Consumibles",
+              period: "daily",
+            },
+          ],
+        },
+        {
+          id: "base",
+          name: "Base Abisal de Sufokia",
+          icon: "🌊",
+          quests: [
+            {
+              id: "q27",
+              name: "La embriaguez de las profundidades",
+              url: "https://dofusdb.fr/es/database/quest/1653",
+              kamas: 21990,
+              annexe: null,
+              period: "daily",
+            },
+            {
+              id: "q28",
+              name: "Pesca de kraballeros",
+              url: "https://dofusdb.fr/es/database/quest/1654",
+              kamas: 43980,
+              annexe: null,
+              period: "daily",
+            },
+            {
+              id: "q29",
+              name: "Los mercemares están bien equipados",
+              url: "https://dofusdb.fr/es/database/quest/1655",
+              kamas: 43980,
+              annexe: null,
+              period: "daily",
+            },
+          ],
+        },
+      ];
+
+      let checked = {};
+      let filter = "all";
+
+      function saveState() {
+        localStorage.setItem("tenma_quetes_es", JSON.stringify(checked));
+      }
+      function loadState() {
+        try {
+          const s = localStorage.getItem("tenma_quetes_es");
+          if (s) checked = JSON.parse(s);
+        } catch (e) {}
+      }
+
+      function render() {
+        const container = document.getElementById("zones-container");
+        container.innerHTML = "";
+        ZONES.forEach((zone) => {
+          const section = document.createElement("div");
+          section.className = "zone-section";
+          const visibleQuests = filter === "all" ? zone.quests : zone.quests.filter((q) => q.period === filter);
+          if (visibleQuests.length === 0) return;
+          const zoneKamas = zone.variant ? zone.quests[0].kamas : zone.quests.reduce((s, q) => s + (q.kamas || 0), 0);
+          section.innerHTML = `
+      <div class="zone-header" onclick="this.parentElement.classList.toggle('collapsed')">
+        <span class="zone-name">${zone.icon} ${zone.name}</span>
+        <span style="font-size:12px; color:var(--muted)">${zoneKamas > 0 ? fmt(zoneKamas) + " kamas" : ""}</span>
+      </div>
+      <div class="zone-body">
+        ${zone.variant ? `<div style="padding:10px; font-style:italic; font-size:12px; color:var(--accent)">${zone.variantNote}</div>` : ""}
+        <table class="quest-table">
+          <thead><tr><th>Misión</th><th style="text-align:right">Kamas</th><th>Extra</th><th>Frecuencia</th><th>✓</th></tr></thead>
+          <tbody>
+            ${visibleQuests
+              .map(
+                (q) => `
+              <tr class="quest-row ${checked[q.id] ? "done" : ""}" id="row-${q.id}">
+                <td class="quest-name"><a href="${q.url}" target="_blank"><span>${q.name}</span></a></td>
+                <td style="text-align:right; font-weight:bold; color:var(--gold)">${q.kamas > 0 ? fmt(q.kamas) : "—"}</td>
+                <td style="font-size:13px">${q.annexe || "—"}</td>
+                <td><span class="pill ${q.period}">${q.period === "daily" ? "Diaria" : "Semanal"}</span></td>
+                <td><input type="checkbox" onclick="toggle('${q.id}', this.checked)" ${checked[q.id] ? "checked" : ""}></td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+          container.appendChild(section);
+        });
+        updateStats();
+      }
+
+      function fmt(n) {
+        return n.toLocaleString("es-ES");
+      }
+      function toggle(id, val) {
+        checked[id] = val;
+        saveState();
+        render();
+      }
+      function setFilter(f) {
+        filter = f;
+        document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+        event.target.classList.add("active");
+        render();
+      }
+      function resetAll() {
+        if (confirm("¿Desmarcar todas las misiones?")) {
+          checked = {};
+          saveState();
+          render();
+        }
+      }
+
+      function updateStats() {
+        let daily = 0,
+          count = 0,
+          total = 0,
+          remain = 0;
+        ZONES.forEach((z) => {
+          z.quests.forEach((q) => {
+            total++;
+            if (checked[q.id]) count++;
+          });
+          if (z.variant) {
+            daily += z.quests[0].kamas;
+            if (!z.quests.some((q) => checked[q.id])) remain += z.quests[0].kamas;
+          } else {
+            z.quests.forEach((q) => {
+              if (q.period === "daily") {
+                daily += q.kamas;
+                if (!checked[q.id]) remain += q.kamas;
+              }
+            });
+          }
+        });
+        document.getElementById("stat-daily").textContent = fmt(daily);
+        document.getElementById("stat-weekly").textContent = fmt(daily * 7);
+        document.getElementById("stat-checked").textContent = count;
+        document.getElementById("stat-total").textContent = total;
+        document.getElementById("stat-remain").textContent = fmt(remain);
+      }
+
+      loadState();
+      render();
+    </script>
+  </body>
+</html>
